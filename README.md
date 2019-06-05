@@ -6,6 +6,7 @@
 
 The goal of warmth_index is to recreate an excel workflow for calculating Warmth Index on a wide dataset in R using in a tidy maner.
 
+
 - The workflow can be found in the `index.Rmd` file and the rendered versionn can be seen [here](http://annakrystalli.me/warmth_index/)
 - Dependencies are documented in the `DESCRIPTION` file under `Imports:`.
 
