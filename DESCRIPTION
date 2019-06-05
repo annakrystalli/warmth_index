@@ -19,3 +19,5 @@ Depends:
     tidyr
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/annakrystalli/warmth_index
+BugReports: https://github.com/annakrystalli/warmth_index/issues
