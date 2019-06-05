@@ -1,6 +1,6 @@
 Type: Compendium
-Package: Compendium title
-Title: Warmth Index Calculation
+Package: warmth_index
+Title: Demo of Warmth Index Calculation
 Version: 0.0.1
 Authors@R: 
     person(given = "Anna",
