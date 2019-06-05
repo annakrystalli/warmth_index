@@ -1,0 +1,21 @@
+Type: Compendium
+Package: Compendium title
+Title: Warmth Index Calculation
+Version: 0.0.1
+Authors@R: 
+    person(given = "Anna",
+           family = "Krystalli",
+           role = c("aut", "cre"),
+           email = "annakrystalli@googlemail.com")
+Description: Demo of Warmth Index Calculation.
+License: MIT
+Depends: 
+    dplyr,
+    knitr,
+    readr,
+    readxl,
+    rmarkdown,
+    stringr,
+    tidyr
+Encoding: UTF-8
+LazyData: true

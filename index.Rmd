@@ -1,0 +1,87 @@
+---
+title: "Calculating Thermal Indices"
+author: "Anna Krystalli"
+date: "05/06/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+```
+
+
+## Read data
+
+Read in data and check.
+
+```{r}
+raw_data <- readxl::read_xlsx("190605_example_data.xlsx") %>%
+    mutate(row_id = 1:nrow(.)) # add a row identifier
+
+raw_data
+```
+
+## Reshape data
+
+I'm reshaping the data from wide to long because having it in a tidy long format makes it easier to reason about unique observations and also to use `dplyr` to analyse subsets. See the vignette on [tidy data](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html) for more info. So what I've done is pulled the 12 monthly columns into two columns, one indicating the month and one the temperature. I've also created a `warm` column which is a logical (`TRUE/FALSE`) index of months that were warmer than 5^o
+```{r}
+reshaped_data <- raw_data %>%
+    tidyr::gather(key = "month", value = "temp", temp_1:temp_12) %>%
+    mutate(month = stringr::str_remove(month, "temp_") %>% readr::parse_number(),
+           warm = case_when(temp > 5 ~ TRUE,
+                            TRUE ~ FALSE))
+
+reshaped_data
+```
+
+
+## `warmth_index` function
+
+Next I wrote a function to calculate warmth index given a logical vector of `warmth` and a vector of temperatures `temp`.
+
+```{r}
+warmth_index <- function(warm, temp){
+    warm_months <- sum(warm)
+    temp_sum <- sum(warm * temp) # when multiplied, the warm logical vector becomes 0 & 1
+    temp_sum - (5 * warm_months)
+}
+```
+
+
+## Apply the functions on subsets for each `row_id`
+
+Now I can use `dplyr`s `group_by` and `summarise` function to calculate warmth index for each `row_id` in a new column called `warmth_index_r`.
+
+```{r}
+warmth_index_df <- reshaped_data %>% 
+    group_by(row_id) %>%
+    summarise(warmth_index_r = warmth_index(warm, temp))
+
+warmth_index_df
+```
+
+## Join the results to the original data
+
+I can now join the results to the original `raw_data`.
+
+```{r}
+results <- left_join(raw_data, warmth_index_df, by = "row_id") 
+```
+
+You can inspect that the calculation worked as expected by comparing the two `warmth_index` columns
+
+```{r}
+results %>% select(warmth_index, warmth_index_r, everything())
+```
+
+If you prefer, ie if you want to continue using the tidy (long) version of the data, you can join the results to that instead and carry on working. It just repeats the calculated value for each month of the same `row_id`.
+
+```{r}
+tidy_results <- left_join(reshaped_data, warmth_index_df, by = "row_id")
+
+tidy_results %>% arrange(row_id)
+```
